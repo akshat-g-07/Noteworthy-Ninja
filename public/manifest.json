@@ -1,15 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "Test Extension",
-  "version": "1.0.0",
-  "description": "A basic example extension.",
-  "key": "",
+  "name": "Side panel extension",
+  "version": "1.0",
+  "description": "Extension with a default side panel.",
+  "oauth2": {
+    "client_id": "",
+    "scopes": [
+      "https://www.googleapis.com/auth/contacts.readonly",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
   "side_panel": {
     "default_path": "index.html"
   },
-  "oauth2": {
-    "client_id": "",
-    "scopes": [""]
-  },
-  "permissions": ["identity", "sidePanel"]
+  "permissions": ["sidePanel", "identity"]
 }
