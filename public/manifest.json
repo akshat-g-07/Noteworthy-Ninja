@@ -14,5 +14,8 @@
   "side_panel": {
     "default_path": "index.html"
   },
-  "permissions": ["sidePanel", "identity"]
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["sidePanel", "identity", "contextMenus", "storage"]
 }
