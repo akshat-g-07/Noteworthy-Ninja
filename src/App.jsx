@@ -1,21 +1,52 @@
 import { useEffect, useState } from "react";
 import { getAuthToken, getUserInfo } from "./chromeActions";
 import Notepad from "./components/notepad";
+import TitleBar from "./components/title-bar";
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState();
   const [error, setError] = useState(null);
   const [notepad, setNotepad] = useState([]);
 
+  const handleNewNote = () => {
+    let tempNotepad = [
+      { id: notepad.length + 1, title: "Untitled", description: "" },
+    ];
+
+    notepad.forEach((item) => tempNotepad.push(item));
+
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
+  const handleEditTitle = (indx, newTitle) => {
+    let tempNotepad = notepad.map((item) =>
+      item.id === indx ? { ...item, title: newTitle } : item
+    );
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+  const handleEditDescription = (indx, newDescdescription) => {
+    let tempNotepad = notepad.map((item) =>
+      item.id === indx ? { ...item, description: newDescdescription } : item
+    );
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
+  const handleDeleteNotepad = (indx) => {
+    let tempNotepad = notepad.filter((item) => item.id !== indx);
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
   useEffect(() => {
-    chrome.storage.session.get("noteString", ({ noteString }) => {
-      updateDefinition(noteString);
-    });
-
     chrome.storage.sync.get("notepad", function (result) {
-      setNotepad(result.notepad);
-
-      console.log(result.notepad);
+      console.log("result", result, result.notepad);
+      if (result.notepad) setNotepad(result.notepad);
+      else {
+        setNotepad([]);
+      }
     });
 
     const listener = (changes) => {
@@ -35,17 +66,15 @@ function App() {
   function updateDefinition(newWord) {
     if (!newWord) return;
 
-    setNotepad((prev) => [
-      { id: prev.length + 1, title: "Untitled", description: newWord },
-      ...prev,
-    ]);
+    let tempNotepad = [
+      { id: notepad.length + 1, title: "Untitled", description: newWord },
+    ];
 
-    chrome.storage.sync.set({
-      notepad: [
-        { id: prev.length + 1, title: "Untitled", description: newWord },
-        ...notepad,
-      ],
-    });
+    notepad.forEach((item) => tempNotepad.push(item));
+
+    console.log(" updateDefinition tempNotepad", tempNotepad);
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
   }
 
   const authenticate = async () => {
@@ -65,9 +94,21 @@ function App() {
       <div className="h-screen w-screen bg-neutral-500 rounded p-4">
         <button onClick={authenticate}>Authenticate</button>
         {userInfo && <>{JSON.stringify(userInfo)}</>}
-
         {error && <>{JSON.stringify(error)}</>}
-        <Notepad notepad={notepad} />
+        {userInfo && (
+          <>
+            <TitleBar
+              userName={userInfo.given_name}
+              handleNewNote={handleNewNote}
+            />
+            <Notepad
+              notepad={notepad}
+              handleDeleteNotepad={handleDeleteNotepad}
+              handleEditTitle={handleEditTitle}
+              handleEditDescription={handleEditDescription}
+            />
+          </>
+        )}
       </div>
     </>
   );
