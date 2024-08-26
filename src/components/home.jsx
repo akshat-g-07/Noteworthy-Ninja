@@ -73,7 +73,7 @@ export default function Home() {
           <button
             className="bg-yellow-500 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow"
             onClick={() => {
-              // checkAuth(true); // Call checkAuth with interactive=true when button is clicked
+              checkAuth(true); // Call checkAuth with interactive=true when button is clicked
               navigate("/payment");
             }}
           >
