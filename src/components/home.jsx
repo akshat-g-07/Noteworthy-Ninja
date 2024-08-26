@@ -1,9 +1,41 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAuthToken, getUserInfo } from "../chromeActions";
 import { ArrowDownLeft } from "lucide-react";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const token = await getAuthToken();
+        const userInfo = await getUserInfo(token);
+        navigate("/payment", { state: { key: userInfo.given_name } });
+      } catch (err) {
+        console.log(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    checkAuth();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <>
+        <div className="size-full flex items-center justify-center">
+          <div className="rounded-full duration-75 size-10 border-x-2 animate-[spin_500ms_linear_infinite] border-x-orange-200" />
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <div className="w-screen min-h-screen bg-stone-700 p-10">
+      <div className="size-full">
         {/* Header */}
         <div className="max-w-xl mx-auto h-fit mt-10 lg:mt-5">
           <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
@@ -19,7 +51,14 @@ export default function Home() {
           </p>
 
           {/* Get Started Button */}
-          <button className="bg-yellow-500 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow">
+          <button
+            className="bg-yellow-500 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow"
+            onClick={() => {
+              console.log("clicked");
+
+              navigate("/auth");
+            }}
+          >
             Get Started
             <svg
               xmlns="http://www.w3.org/2000/svg"

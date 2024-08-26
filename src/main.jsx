@@ -11,13 +11,14 @@ import App from "./App.jsx";
 import Auth from "./components/auth.jsx";
 import Payment from "./components/payment.jsx";
 import Notepad from "./components/notepad.jsx";
+import Home from "./components/home.jsx";
 
 const router = createMemoryRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <App /> },
+      { index: true, element: <Home /> },
       { path: "/auth", element: <Auth /> },
       { path: "/payment", element: <Payment /> },
       { path: "/notepad", element: <Notepad /> },
