@@ -95,7 +95,7 @@ export default async function Payment() {
             }}
             onApprove={(data, actions) => {
               return actions.subscription.get().then(function () {
-                return fetch(
+                fetch(
                   import.meta.env.VITE_PYTHON_SERVICE + "/user_subscribed",
                   {
                     method: "POST",
@@ -107,6 +107,7 @@ export default async function Payment() {
                     }),
                   }
                 );
+                navigate("/notepad");
               });
             }}
           />

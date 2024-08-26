@@ -23,7 +23,6 @@ export default function Home() {
 
         if (token) {
           const userInfo = await getUserInfo(token);
-          console.log(userInfo);
           navigate("/payment", {
             state: { key: { user: userInfo } },
           });
