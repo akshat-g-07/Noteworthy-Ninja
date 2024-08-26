@@ -1,27 +1,47 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAuthToken, getUserInfo } from "../chromeActions";
+import {
+  getAuthToken,
+  getUserInfo,
+  checkExistingAuthToken,
+} from "../chromeActions";
 import { ArrowDownLeft } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function checkAuth() {
+  const checkAuth = useCallback(
+    async (interactive = false) => {
       try {
-        const token = await getAuthToken();
-        const userInfo = await getUserInfo(token);
-        navigate("/payment", { state: { key: userInfo.given_name } });
+        let token;
+        if (interactive) {
+          token = await getAuthToken();
+        } else {
+          token = await checkExistingAuthToken();
+        }
+
+        if (token) {
+          const userInfo = await getUserInfo(token);
+          console.log(userInfo);
+          navigate("/payment", {
+            state: { key: { userName: userInfo.given_name, user: userInfo } },
+          });
+        } else if (!interactive) {
+          // If not interactive and no token, just set loading to false
+          setLoading(false);
+        }
       } catch (err) {
         console.log(err.message);
-      } finally {
         setLoading(false);
       }
-    }
+    },
+    [navigate]
+  );
 
-    checkAuth();
-  }, [navigate]);
+  useEffect(() => {
+    checkAuth(false); // Check auth without interaction on component mount
+  }, [checkAuth]);
 
   if (loading) {
     return (
@@ -46,7 +66,7 @@ export default function Home() {
           </div>
 
           {/* Descrpition */}
-          <p className="w-full my-2 text-center text-white/65 text-lg md:text-xl lg:text-2xl font-semibold md:font-bold lg:font-bold">
+          <p className="w-full my-5 text-center text-white/65 text-lg md:text-xl lg:text-2xl font-semibold md:font-bold lg:font-bold">
             Take notes anywhere, sync everywhere—your notes are always in reach.
           </p>
 
@@ -54,9 +74,7 @@ export default function Home() {
           <button
             className="bg-yellow-500 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow"
             onClick={() => {
-              console.log("clicked");
-
-              navigate("/auth");
+              checkAuth(true); // Call checkAuth with interactive=true when button is clicked
             }}
           >
             Get Started
