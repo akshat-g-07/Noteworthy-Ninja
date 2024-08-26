@@ -12,17 +12,22 @@ import Payment from "./components/payment.jsx";
 import Notepad from "./components/notepad.jsx";
 import Home from "./components/home.jsx";
 
-const router = createMemoryRouter([
+const router = createMemoryRouter(
+  [
+    {
+      path: "/",
+      element: <App />,
+      children: [
+        { index: true, element: <Home /> },
+        { path: "/payment", element: <Payment /> },
+        { path: "/notepad", element: <Notepad /> },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <App />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: "/payment", element: <Payment /> },
-      { path: "/notepad", element: <Notepad /> },
-    ],
-  },
-]);
+    initialEntries: ["/"], // Add this line
+  }
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
