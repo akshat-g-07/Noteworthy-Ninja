@@ -1,164 +1,200 @@
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import SaveIcon from "@mui/icons-material/Save";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  checkExistingAuthToken,
+  getAuthToken,
+  getUserInfo,
+  revokeToken,
+} from "../chromeActions";
+import Note from "./note";
+import Title from "./title";
 
-export default function Notepad({
-  notepad,
-  handleDeleteNotepad,
-  handleEditTitle,
-  handleEditDescription,
-}) {
-  const [showNote, setShowNote] = useState();
-  const [titleVisible, setTitleVisible] = useState(true);
-  const [titleValue, setTitleValue] = useState();
-  const [descriptionValue, setDescriptionValue] = useState();
-  const [edit, setEdit] = useState(false);
+export default function Notepad() {
+  console.log("notepad");
+  const [userInfo, setUserInfo] = useState();
+  const [loading, setLoading] = useState(false);
+  const [notepad, setNotepad] = useState([]);
+  const navigate = useNavigate();
 
-  const handleSelectClick = (itemId) => {
-    let tempSelected = notepad.filter((item) => item.id === itemId);
-    setShowNote(tempSelected[0]);
-    setTitleValue(tempSelected[0].title);
-    setDescriptionValue(tempSelected[0].description);
-    setTitleVisible(false);
+  const checkAuth = useCallback(
+    async (interactive = false) => {
+      try {
+        let token;
+        if (interactive) {
+          token = await getAuthToken();
+        } else {
+          token = await checkExistingAuthToken();
+        }
+
+        if (token) {
+          const userInfo = await getUserInfo(token);
+          if (!userInfo) navigate("/");
+
+          setUserInfo(userInfo);
+
+          const checkSubscription = await fetch(
+            import.meta.env.VITE_PYTHON_SERVICE + "/check_subscription",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userEmail: user.email,
+              }),
+            }
+          );
+
+          const isSubscribed = await checkSubscription.json();
+
+          if (!isSubscribed) {
+            navigate("/payment");
+          } else if (!interactive) {
+            setLoading(false);
+          }
+        }
+      } catch (err) {
+        console.log(err.message);
+        setLoading(false);
+      }
+    },
+    [navigate]
+  );
+
+  useEffect(() => {
+    checkAuth(false);
+  }, [checkAuth]);
+
+  const handleNewNote = () => {
+    let tempNotepad = [
+      { id: notepad.length + 1, title: "Untitled", description: "" },
+    ];
+
+    notepad.forEach((item) => tempNotepad.push(item));
+
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
+  const handleEditTitle = (indx, newTitle) => {
+    let tempNotepad = notepad.map((item) =>
+      item.id === indx ? { ...item, title: newTitle } : item
+    );
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+  const handleEditDescription = (indx, newDescdescription) => {
+    let tempNotepad = notepad.map((item) =>
+      item.id === indx ? { ...item, description: newDescdescription } : item
+    );
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
+  const handleDeleteNotepad = (indx) => {
+    let tempNotepad = notepad.filter((item) => item.id !== indx);
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  };
+
+  useEffect(() => {
+    chrome.storage.sync.get("notepad", function (result) {
+      console.log("result", result, result.notepad);
+      if (result.notepad) setNotepad(result.notepad);
+      else {
+        setNotepad([]);
+      }
+    });
+
+    const listener = (changes) => {
+      const noteStringChange = changes["noteString"];
+      if (noteStringChange) {
+        updateDefinition(noteStringChange.newValue);
+      }
+    };
+
+    chrome.storage.session.onChanged.addListener(listener);
+
+    return () => {
+      chrome.storage.session.onChanged.removeListener(listener);
+    };
+  }, []);
+
+  function updateDefinition(newWord) {
+    if (!newWord) return;
+
+    let tempNotepad = [
+      { id: notepad.length + 1, title: "Untitled", description: newWord },
+    ];
+
+    notepad.forEach((item) => tempNotepad.push(item));
+
+    console.log(" updateDefinition tempNotepad", tempNotepad);
+    setNotepad(tempNotepad);
+    chrome.storage.sync.set({ notepad: tempNotepad });
+  }
+
+  if (loading) {
+    return (
+      <>
+        <div className="size-full flex items-center justify-center">
+          <div className="rounded-full duration-75 size-10 border-x-2 animate-[spin_500ms_linear_infinite] border-x-orange-200" />
+        </div>
+      </>
+    );
+  }
+
+  const handleLogout = async () => {
+    const success = await logout();
+    if (success) {
+      console.log("Logged out successfully");
+      // Update your app state or redirect the user
+    } else {
+      console.log("Logout failed");
+    }
   };
 
   return (
     <>
-      {notepad && notepad.length > 0 ? (
-        <>
-          <div className="w-full h-[90%] border-2 border-black">
-            {titleVisible ? (
-              <div className="w-full h-full overflow-y-auto px-5">
-                {notepad.map((item) => {
-                  return (
-                    <div
-                      key={item.id}
-                      className={`w-full cursor-pointer text-2xl font-semibold px-5 py-2 flex rounded hover:bg-neutral-600 group border-b border-black`}
-                      onClick={() => {
-                        handleSelectClick(item.id);
-                      }}
-                    >
-                      <div className="truncate w-11/12">{item.title}</div>
-                      <div className="hidden w-1/12 group-hover:block">
-                        <DeleteIcon
-                          sx={{
-                            cursor: "pointer",
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteNotepad(item.id);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="w-full h-full overflow-y-auto p-5 flex flex-col items-end">
-                <div className="flex items-end w-full">
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<ArrowBackIosNewIcon />}
-                    sx={{
-                      color: "black",
-                      width: "20%",
-                      marginRight: "5px",
-                    }}
-                    onClick={() => {
-                      setTitleVisible(true);
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <TextField
-                    variant="standard"
-                    value={titleValue}
-                    onChange={(e) => {
-                      setTitleValue(e.target.value);
-                    }}
-                    InputProps={{
-                      readOnly: !edit,
-                    }}
-                    sx={{
-                      width: "75%",
-                      marginRight: "5px",
-                      marginLeft: "5px",
-                    }}
-                  />
-                  {edit ? (
-                    <SaveIcon
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        handleEditTitle(showNote.id, titleValue);
-                        setEdit(false);
-                      }}
-                    />
-                  ) : (
-                    <EditIcon
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        setEdit(true);
-                      }}
-                    />
-                  )}
-                  <DeleteIcon
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      handleDeleteNotepad(showNote.id);
-                      setTitleVisible(true);
-                    }}
-                  />
-                </div>
-                <TextField
-                  multiline
-                  rows={20}
-                  value={descriptionValue}
-                  onChange={(e) => {
-                    setDescriptionValue(e.target.value);
-                  }}
-                  sx={{
-                    width: "100%",
-                    marginTop: "20px",
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  startIcon={<SaveIcon />}
-                  sx={{
-                    color: "black",
-                    width: "20%",
-                    marginTop: "10px",
-                  }}
-                  onClick={() => {
-                    handleEditDescription(showNote.id, descriptionValue);
-                    setTitleVisible(true);
-                  }}
-                >
-                  Save
-                </Button>
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="w-full h-[90%] border-2 border-black flex items-center justify-center font-semibold text-black/50 text-xl">
-            Start Creating Notes
-          </div>
-        </>
-      )}
+      <div className="size-full">
+        <button onClick={handleLogout}>Logout</button>
+
+        {userInfo && (
+          <>
+            Inside User Info
+            {/* <Title
+              userName={userInfo.given_name}
+              userPicture={userInfo.picture}
+              handleNewNote={handleNewNote}
+            />
+            <Note
+              notepad={notepad}
+              handleNewNote={handleNewNote}
+              handleEditTitle={handleEditTitle}
+              handleDeleteNotepad={handleDeleteNotepad}
+              handleEditDescription={handleEditDescription}
+            /> */}
+          </>
+        )}
+      </div>
     </>
   );
+}
+
+async function logout() {
+  try {
+    const token = await getAuthToken();
+    await revokeToken(token);
+    // Clear any stored user data in your extension
+    // For example, if you're using chrome.storage:
+    chrome.storage.local.remove(["userToken", "userInfo"], () => {
+      console.log("User data cleared");
+    });
+    navigate("/");
+    // You might also want to update your UI to reflect the logged out state
+    return true;
+  } catch (error) {
+    console.error("Logout failed:", error);
+    return false;
+  }
 }
