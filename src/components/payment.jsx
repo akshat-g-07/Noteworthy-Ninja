@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // import { getAuthToken, revokeToken } from "../chromeActions";
 
@@ -19,7 +20,8 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 //   }
 // }
 
-export default async function Payment() {
+export default function Payment() {
+  console.log("payment");
   const location = useLocation();
   const { user } = location.state?.key || {};
   const navigate = useNavigate();
@@ -30,41 +32,53 @@ export default async function Payment() {
     intent: "subscription",
   };
 
-  if (!user)
-    navigate("/", {
-      state: { key: { error: "not logged in" } },
-    });
-
-  const checkSubscription = await fetch(
-    import.meta.env.VITE_PYTHON_SERVICE + "/check_subscription",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userEmail: user.email,
-      }),
+  useEffect(() => {
+    if (!user) {
+      navigate("/", {
+        state: { key: { error: "not logged in" } },
+      });
+      return;
     }
-  );
 
-  const isSubscribed = await checkSubscription.json();
+    const checkSubscriptionStatus = async () => {
+      const checkSubscription = await fetch(
+        import.meta.env.VITE_PYTHON_SERVICE + "/check_subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userEmail: user.email,
+          }),
+        }
+      );
 
-  if (isSubscribed) {
-    navigate("/notepad");
-  }
+      const subscriptionStatus = await checkSubscription.json();
+      console.log("subscriptionStatus", subscriptionStatus);
 
-  fetch(import.meta.env.VITE_PYTHON_SERVICE + "/add_user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userName: user.name,
-      userEmail: user.email,
-      subscribed: "False",
-    }),
-  });
+      if (subscriptionStatus.data) {
+        navigate("/notepad");
+      }
+    };
+
+    const addUser = async () => {
+      await fetch(import.meta.env.VITE_PYTHON_SERVICE + "/add_user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName: user.name,
+          userEmail: user.email,
+          subscribed: "False",
+        }),
+      });
+    };
+
+    checkSubscriptionStatus();
+    addUser();
+  }, [user, navigate]);
 
   // const handleLogout = async () => {
   //   const success = await logout();
@@ -81,11 +95,26 @@ export default async function Payment() {
       <div className="size-full">
         <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
           <img src="/logo.jpeg" className="w-auto h-full mr-2" />
-          <p className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold">
+          <p
+            className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold"
+            onClick={() => {
+              console.log("clicked");
+              fetch(import.meta.env.VITE_PYTHON_SERVICE + "/user_subscribed", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  userEmail: user.email,
+                }),
+              });
+              navigate("/notepad");
+            }}
+          >
             Noteworthy Ninja
           </p>
         </div>
-
+        {/* 
         <PayPalScriptProvider options={initialOptions}>
           <PayPalButtons
             createSubscription={(data, actions) => {
@@ -111,7 +140,7 @@ export default async function Payment() {
               });
             }}
           />
-        </PayPalScriptProvider>
+        </PayPalScriptProvider> */}
       </div>
     </>
     // <div>
