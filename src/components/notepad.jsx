@@ -161,8 +161,7 @@ export default function Notepad() {
 
         {userInfo && (
           <>
-            Inside User Info
-            {/* <Title
+            <Title
               userName={userInfo.given_name}
               userPicture={userInfo.picture}
               handleNewNote={handleNewNote}
@@ -173,7 +172,7 @@ export default function Notepad() {
               handleEditTitle={handleEditTitle}
               handleDeleteNotepad={handleDeleteNotepad}
               handleEditDescription={handleEditDescription}
-            /> */}
+            />
           </>
         )}
       </div>
