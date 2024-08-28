@@ -27,7 +27,6 @@ export default function Home() {
             state: { key: { user: userInfo } },
           });
         } else if (!interactive) {
-          // If not interactive and no token, just set loading to false
           setLoading(false);
         }
       } catch (err) {
@@ -39,7 +38,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    checkAuth(false); // Check auth without interaction on component mount
+    checkAuth(false); 
   }, [checkAuth]);
 
   if (loading) {
