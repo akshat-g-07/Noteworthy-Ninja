@@ -37,9 +37,9 @@ export default function Home() {
     [navigate]
   );
 
-  useEffect(() => {
-    checkAuth(false); 
-  }, [checkAuth]);
+  // useEffect(() => {
+  //   checkAuth(false); 
+  // }, [checkAuth]);
 
   if (loading) {
     return (
