@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // import { getAuthToken, revokeToken } from "../chromeActions";
 
@@ -21,7 +21,6 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 // }
 
 export default function Payment() {
-  console.log("payment");
   const location = useLocation();
   const { user } = location.state?.key || {};
   const navigate = useNavigate();
@@ -55,29 +54,25 @@ export default function Payment() {
       );
 
       const subscriptionStatus = await checkSubscription.json();
-      console.log("subscriptionStatus", subscriptionStatus);
 
       if (subscriptionStatus.data) {
         navigate("/notepad");
+      } else {
+        await fetch(import.meta.env.VITE_PYTHON_SERVICE + "/add_user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userName: user.name,
+            userEmail: user.email,
+            subscribed: "NotSubscribed",
+          }),
+        });
       }
     };
 
-    const addUser = async () => {
-      await fetch(import.meta.env.VITE_PYTHON_SERVICE + "/add_user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userName: user.name,
-          userEmail: user.email,
-          subscribed: "False",
-        }),
-      });
-    };
-
     checkSubscriptionStatus();
-    addUser();
   }, [user, navigate]);
 
   // const handleLogout = async () => {
@@ -95,22 +90,7 @@ export default function Payment() {
       <div className="size-full">
         <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
           <img src="/logo.jpeg" className="w-auto h-full mr-2" />
-          <p
-            className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold"
-            onClick={() => {
-              console.log("clicked");
-              fetch(import.meta.env.VITE_PYTHON_SERVICE + "/user_subscribed", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  userEmail: user.email,
-                }),
-              });
-              navigate("/notepad");
-            }}
-          >
+          <p className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold">
             Noteworthy Ninja
           </p>
         </div>
