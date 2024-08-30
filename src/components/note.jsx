@@ -1,10 +1,9 @@
 import { useState } from "react";
-import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { CircleChevronLeft, Save } from "lucide-react";
 
 export default function Note({
   notepad,
@@ -62,21 +61,15 @@ export default function Note({
             ) : (
               <div className="w-full h-full overflow-y-auto p-5 flex flex-col items-end">
                 <div className="flex items-end w-full">
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<ArrowBackIosNewIcon />}
-                    sx={{
-                      color: "black",
-                      width: "20%",
-                      marginRight: "5px",
-                    }}
+                  <button
+                    className="text-black px-4 py-2 rounded-md flex items-center shadow-md border border-[#facc15] hover:border-[#facc15]/90"
                     onClick={() => {
                       setTitleVisible(true);
                     }}
                   >
+                    <CircleChevronLeft className="mr-2" size={15} />
                     Back
-                  </Button>
+                  </button>
                   <TextField
                     variant="standard"
                     value={titleValue}
@@ -134,21 +127,16 @@ export default function Note({
                     marginTop: "20px",
                   }}
                 />
-                <Button
-                  variant="contained"
-                  startIcon={<SaveIcon />}
-                  sx={{
-                    color: "black",
-                    width: "20%",
-                    marginTop: "10px",
-                  }}
+                <button
+                  className="bg-[#facc15] hover:bg-[#facc15]/90 text-black px-4 py-2 rounded-md flex items-center font-medium shadow-md border border-black"
                   onClick={() => {
                     handleEditDescription(showNote.id, descriptionValue);
                     setTitleVisible(true);
                   }}
                 >
+                  <Save className="mr-2" size={15} />
                   Save
-                </Button>
+                </button>
               </div>
             )}
           </div>
