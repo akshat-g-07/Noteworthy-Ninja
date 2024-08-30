@@ -156,11 +156,13 @@ export default function Note({
       ) : (
         <>
           <div
-            className="w-full border-2 border-black flex flex-col items-center justify-center font-semibold text-black bg-[#facc15] hover:bg-[#facc15]/90 text-xl cursor-pointer p-10"
+            className="w-full border-2 border-black flex flex-col items-center justify-center font-semibold text-black bg-[#facc15] hover:bg-[#facc15]/90 text-xl cursor-pointer p-10 rounded-lg"
             onClick={handleNewNote}
           >
-            <div className="text-7xl">+</div>
-            <div className="text-2xl">Start Creating Notes</div>
+            <div className="text-7xl w-full text-center">+</div>
+            <div className="text-2xl w-full text-center">
+              Start Creating Notes
+            </div>
           </div>
         </>
       )}
