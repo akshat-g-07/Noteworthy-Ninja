@@ -10,7 +10,6 @@ import Note from "./note";
 import Title from "./title";
 
 export default function Notepad() {
-  console.log("notepad");
   const [userInfo, setUserInfo] = useState();
   const [loading, setLoading] = useState(false);
   const [notepad, setNotepad] = useState([]);
@@ -99,7 +98,6 @@ export default function Notepad() {
 
   useEffect(() => {
     chrome.storage.sync.get("notepad", function (result) {
-      console.log("result", result, result.notepad);
       if (result.notepad) setNotepad(result.notepad);
       else {
         setNotepad([]);
@@ -129,7 +127,6 @@ export default function Notepad() {
 
     notepad.forEach((item) => tempNotepad.push(item));
 
-    console.log(" updateDefinition tempNotepad", tempNotepad);
     setNotepad(tempNotepad);
     chrome.storage.sync.set({ notepad: tempNotepad });
   }
@@ -147,8 +144,7 @@ export default function Notepad() {
   const handleLogout = async () => {
     const success = await logout();
     if (success) {
-      console.log("Logged out successfully");
-      // Update your app state or redirect the user
+      navigate("/");
     } else {
       console.log("Logout failed");
     }
