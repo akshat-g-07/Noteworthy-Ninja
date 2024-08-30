@@ -185,8 +185,6 @@ async function logout() {
     chrome.storage.local.remove(["userToken", "userInfo"], () => {
       console.log("User data cleared");
     });
-    navigate("/");
-    // You might also want to update your UI to reflect the logged out state
     return true;
   } catch (error) {
     console.error("Logout failed:", error);
