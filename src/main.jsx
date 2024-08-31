@@ -25,7 +25,7 @@ const router = createMemoryRouter(
     },
   ],
   {
-    initialEntries: ["/"], // Add this line
+    initialEntries: ["/"], 
   }
 );
 
