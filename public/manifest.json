@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Side panel extension",
+  "name": "Noteworthy Ninja",
   "version": "1.0",
-  "description": "Extension with a default side panel.",
+  "description": "Take notes anywhere, sync everywhere—your notes are always in reach.",
   "oauth2": {
     "client_id": "",
     "scopes": [
-      "https://www.googleapis.com/auth/contacts.readonly",
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/userinfo.profile"
     ]
@@ -17,5 +16,12 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["sidePanel", "identity", "contextMenus", "storage"]
+  "permissions": ["sidePanel", "identity", "contextMenus", "storage"],
+  "host_permissions": [""],
+  "icons": {
+    "16": "assets/favicon-16x16.png",
+    "32": "assets/favicon-32x32.png",
+    "48": "assets/favicon.png",
+    "128": "assets/favicon.png"
+  }
 }
