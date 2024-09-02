@@ -24,7 +24,7 @@ export default function Home() {
         if (token) {
           const userInfo = await getUserInfo(token);
           navigate("/payment", {
-            state: { key: { user: userInfo } },
+            state: { key: { user: userInfo, token: token } },
           });
         } else if (!interactive) {
           setLoading(false);
@@ -53,7 +53,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="size-full">
+      <div className="size-full overflow-y-auto">
         {/* Header */}
         <div className="max-w-xl mx-auto h-fit mt-10 lg:mt-5">
           <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
@@ -70,7 +70,7 @@ export default function Home() {
 
           {/* Get Started Button */}
           <button
-            className="bg-yellow-500 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow"
+            className="bg-[#facc15] hover:bg-[#facc15]/90 size-fit mx-auto flex my-10 tracking-wider text-2xl md:text-3xl lg:text-4xl font-bold md:font-extrabold lg:font-extrabold p-3 rounded items-center cursor-pointer shadow"
             onClick={() => {
               checkAuth(true); // Call checkAuth with interactive=true when button is clicked
               navigate("/payment");
