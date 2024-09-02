@@ -19,7 +19,7 @@ const router = createMemoryRouter(
       path: "/",
       element: <App />,
       children: [
-        { index: true, element: <PrivacyPolicy /> },
+        { index: true, element: <Home /> },
         { path: "/payment", element: <Payment /> },
         { path: "/notepad", element: <Notepad /> },
         { path: "/privacy-policy", element: <PrivacyPolicy /> },
