@@ -57,7 +57,7 @@ export default function Home() {
         {/* Header */}
         <div className="max-w-xl mx-auto h-fit mt-10 lg:mt-5">
           <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
-            <img src="/logo.jpeg" className="w-auto h-full mr-2" />
+            <img src="/assets/logo.png" className="w-auto h-full mr-2" />
             <p className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold">
               Noteworthy Ninja
             </p>
