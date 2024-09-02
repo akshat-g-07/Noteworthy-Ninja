@@ -1,7 +1,20 @@
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
 export default function PrivacyPolicy() {
+  const navigate = useNavigate();
   return (
     <>
       <div className="size-full text-white">
+        <button
+          className="absolute top-0 left-0 m-5 flex items-center gap-2"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </button>
         <h1 className="text-3xl font-bold w-full text-center">
           Privacy Policy for Noteworthy Ninja
         </h1>

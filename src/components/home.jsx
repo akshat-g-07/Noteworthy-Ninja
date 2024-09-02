@@ -110,6 +110,15 @@ export default function Home() {
               <ArrowDownLeft className="size-3 rotate-180" />
             </p>
           </div>
+
+          <div
+            className="w-full text-white/75 text-sm font-thin flex flex-col lg:flex-row justify-center items-center my-2 cursor-pointer"
+            onClick={() => {
+              navigate("/privacy-policy");
+            }}
+          >
+            Privacy Policy
+          </div>
         </div>
       </div>
     </>
