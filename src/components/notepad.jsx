@@ -14,6 +14,7 @@ export default function Notepad() {
   const [loading, setLoading] = useState(false);
   const [notepad, setNotepad] = useState([]);
   const navigate = useNavigate();
+  console.log("re-rendered");
 
   const checkAuth = useCallback(
     async (interactive = false) => {
@@ -21,12 +22,15 @@ export default function Notepad() {
         let token;
         if (interactive) {
           token = await getAuthToken();
+          console.log("token interactive=>", token);
         } else {
           token = await checkExistingAuthToken();
+          console.log("token", token);
         }
 
         if (token) {
           const userInfo = await getUserInfo(token);
+          console.log("userInfo", userInfo);
           if (!userInfo) navigate("/");
 
           setUserInfo(userInfo);
@@ -39,21 +43,22 @@ export default function Notepad() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                userEmail: user.email,
+                userEmail: userInfo.email,
               }),
             }
           );
 
           const isSubscribed = await checkSubscription.json();
+          console.log("isSubscribed", isSubscribed);
 
-          if (!isSubscribed) {
+          if (!isSubscribed.data) {
             navigate("/payment");
           } else if (!interactive) {
             setLoading(false);
           }
         }
       } catch (err) {
-        console.log(err.message);
+        console.log("this is the error", err.message);
         setLoading(false);
       }
     },
@@ -72,7 +77,9 @@ export default function Notepad() {
     notepad.forEach((item) => tempNotepad.push(item));
 
     setNotepad(tempNotepad);
-    chrome.storage.sync.set({ notepad: tempNotepad });
+    chrome.storage.sync.set({ notepad: tempNotepad }, () => {
+      console.log("Storage set:", tempNotepad);
+    });
   };
 
   const handleEditTitle = (indx, newTitle) => {
@@ -80,56 +87,108 @@ export default function Notepad() {
       item.id === indx ? { ...item, title: newTitle } : item
     );
     setNotepad(tempNotepad);
-    chrome.storage.sync.set({ notepad: tempNotepad });
+    chrome.storage.sync.set({ notepad: tempNotepad }, () => {
+      console.log("Storage set:", tempNotepad);
+    });
   };
+
   const handleEditDescription = (indx, newDescdescription) => {
     let tempNotepad = notepad.map((item) =>
       item.id === indx ? { ...item, description: newDescdescription } : item
     );
     setNotepad(tempNotepad);
-    chrome.storage.sync.set({ notepad: tempNotepad });
+    chrome.storage.sync.set({ notepad: tempNotepad }, () => {
+      console.log("Storage set:", tempNotepad);
+    });
   };
 
   const handleDeleteNotepad = (indx) => {
     let tempNotepad = notepad.filter((item) => item.id !== indx);
     setNotepad(tempNotepad);
-    chrome.storage.sync.set({ notepad: tempNotepad });
+    chrome.storage.sync.set({ notepad: tempNotepad }, () => {
+      console.log("Storage set:", tempNotepad);
+    });
   };
 
   useEffect(() => {
-    chrome.storage.sync.get("notepad", function (result) {
-      if (result.notepad) setNotepad(result.notepad);
-      else {
-        setNotepad([]);
-      }
-    });
+    const fetchNotepad = () => {
+      chrome.storage.sync.get("notepad", function (result) {
+        console.log("result", result, result.notepad);
+        if (result.notepad) setNotepad(result.notepad);
+        else {
+          console.log("else block executed");
+          setNotepad([]);
+        }
+      });
+    };
 
-    const listener = (changes) => {
-      const noteStringChange = changes["noteString"];
-      if (noteStringChange) {
-        updateDefinition(noteStringChange.newValue);
+    fetchNotepad();
+
+    const messageListener = (message) => {
+      if (message.type === "UPDATE_DEFINITION") {
+        fetchNotepad();
       }
     };
 
-    chrome.storage.session.onChanged.addListener(listener);
+    chrome.runtime.onMessage.addListener(messageListener);
 
     return () => {
-      chrome.storage.session.onChanged.removeListener(listener);
+      chrome.runtime.onMessage.removeListener(messageListener);
     };
+
+    // const listener = (changes) => {
+    //   console.log("changes", changes);
+    //   const noteStringChange = changes["noteString"];
+    //   console.log("noteStringChange", noteStringChange);
+    //   if (noteStringChange) {
+    //     console.log("noteStringChange.newValue", noteStringChange.newValue);
+    //     updateDefinition(noteStringChange.newValue);
+    //   }
+    // };
+
+    // console.log(
+    //   "inside before useEffect",
+    //   chrome.storage,
+    //   chrome.storage.session,
+    //   chrome.storage.session.onChanged
+    // );
+
+    // chrome.storage.onChanged.addListener(listener);
+    // console.log("Listener added");
+    // chrome.storage.onChanged.addListener((changes, namespace) => {
+    //   console.log("changes seconds", changes);
+    // });
+    // console.log(
+    //   "inside after useEffect",
+    //   chrome.storage,
+    //   chrome.storage.
+    //   chrome.storage.onChanged
+    // );
+
+    // return () => {
+    //   console.log("Removing listener");
+    //   chrome.storage.onChanged.removeListener(listener);
+    // };
   }, []);
 
-  function updateDefinition(newWord) {
-    if (!newWord) return;
+  // function updateDefinition(newWord) {
+  //   if (!newWord) return;
 
-    let tempNotepad = [
-      { id: notepad.length + 1, title: "Untitled", description: newWord },
-    ];
+  //   setNotepad((prevNotepad) => {
+  //     let tempNotepad = [
+  //       { id: prevNotepad.length + 1, title: "Untitled", description: newWord },
+  //     ];
 
-    notepad.forEach((item) => tempNotepad.push(item));
+  //     console.log("tempNotepad before", prevNotepad, tempNotepad);
+  //     prevNotepad.forEach((item) => {
+  //       tempNotepad.push(item);
+  //     });
+  //     console.log("tempNotepad after", prevNotepad, tempNotepad);
 
-    setNotepad(tempNotepad);
-    chrome.storage.sync.set({ notepad: tempNotepad });
-  }
+  //     chrome.storage.sync.set({ notepad: tempNotepad });
+  //     return tempNotepad;
+  //   });
+  // }
 
   if (loading) {
     return (
@@ -145,16 +204,12 @@ export default function Notepad() {
     const success = await logout();
     if (success) {
       navigate("/");
-    } else {
-      console.log("Logout failed");
     }
   };
 
   return (
     <>
-      <div className="size-full">
-        <button onClick={handleLogout}>Logout</button>
-
+      <div className="size-full overflow-y-auto flex flex-col">
         {userInfo && (
           <>
             <Title
@@ -182,9 +237,7 @@ async function logout() {
     await revokeToken(token);
     // Clear any stored user data in your extension
     // For example, if you're using chrome.storage:
-    chrome.storage.local.remove(["userToken", "userInfo"], () => {
-      console.log("User data cleared");
-    });
+    chrome.storage.local.remove(["userToken", "userInfo"], () => {});
     return true;
   } catch (error) {
     console.error("Logout failed:", error);
