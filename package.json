@@ -8,13 +8,15 @@
     "build": "npm run update-manifest && vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "update-manifest": "node update-manifest.cjs"
+    "update-manifest": "node update-manifest.cjs",
+    "postbuild": "node post-build.cjs"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.6",
     "@mui/material": "^5.16.6",
+    "archiver": "^7.0.1",
     "dotenv": "^16.4.5",
     "lucide-react": "^0.436.0",
     "react": "^18.2.0",
