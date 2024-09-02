@@ -30,9 +30,9 @@ export default function Note({
     <>
       {notepad && notepad.length > 0 ? (
         <>
-          <div className="w-full h-[90%] border-2 border-black">
+          <div className="w-full flex-grow border-2 border-black overflow-y-auto">
             {titleVisible ? (
-              <div className="w-full h-full overflow-y-auto px-5">
+              <div className="w-full h-full px-5">
                 {notepad.map((item) => {
                   return (
                     <div
@@ -62,7 +62,7 @@ export default function Note({
               <div className="w-full h-full overflow-y-auto p-5 flex flex-col items-end">
                 <div className="flex items-end w-full">
                   <button
-                    className="text-black px-4 py-2 rounded-md flex items-center shadow-md border border-[#facc15] hover:border-[#facc15]/90"
+                    className="px-4 py-2 rounded-md flex items-center shadow-md border border-[#facc15] hover:border-[#facc15]/90 text-[#FDFDF8] bg-[#252120] hover:bg-[#252120]/80 justify-center whitespace-nowrap text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     onClick={() => {
                       setTitleVisible(true);
                     }}
@@ -83,6 +83,9 @@ export default function Note({
                       width: "75%",
                       marginRight: "5px",
                       marginLeft: "5px",
+                      "& .MuiInputBase-input": {
+                        color: "white",
+                      },
                     }}
                   />
                   {edit ? (
@@ -117,7 +120,7 @@ export default function Note({
                 </div>
                 <TextField
                   multiline
-                  rows={20}
+                  rows={14}
                   value={descriptionValue}
                   onChange={(e) => {
                     setDescriptionValue(e.target.value);
@@ -125,10 +128,13 @@ export default function Note({
                   sx={{
                     width: "100%",
                     marginTop: "20px",
+                    "& .MuiInputBase-input": {
+                      color: "#94a3b8",
+                    },
                   }}
                 />
                 <button
-                  className="bg-[#facc15] hover:bg-[#facc15]/90 text-black px-4 py-2 rounded-md flex items-center font-medium shadow-md border border-black"
+                  className="bg-[#facc15] hover:bg-[#facc15]/90 text-black px-4 py-2 rounded-md flex items-center font-medium shadow-md border border-black mt-2"
                   onClick={() => {
                     handleEditDescription(showNote.id, descriptionValue);
                     setTitleVisible(true);
