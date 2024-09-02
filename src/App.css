@@ -8,3 +8,21 @@ html {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Rounded edges for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f1f1f1; /* Background of the scrollbar track */
+  border-radius: 10px; /* Rounded edges for the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f1f1f1b0; /* Background of the scrollbar track */
+}
