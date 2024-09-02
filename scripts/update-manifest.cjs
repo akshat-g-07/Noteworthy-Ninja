@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 
-const manifestPath = path.join(__dirname, "public", "manifest.json");
+const manifestPath = path.join(__dirname, "..", "public", "manifest.json");
 
 let manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 

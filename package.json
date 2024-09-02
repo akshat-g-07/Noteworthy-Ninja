@@ -8,8 +8,8 @@
     "build": "npm run update-manifest && vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "update-manifest": "node update-manifest.cjs",
-    "postbuild": "node post-build.cjs"
+    "update-manifest": "node scripts/update-manifest.cjs",
+    "postbuild": "node scripts/post-build.cjs"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
