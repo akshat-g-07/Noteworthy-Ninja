@@ -43,12 +43,14 @@ export default function Payment() {
           }),
         });
 
-        chrome.windows.create({
-          url: `${import.meta.env.VITE_PAYMENT_SERVICE}/?token=${token}`,
-          type: "popup",
-          width: 500,
-          height: 600,
-        });
+        navigate("/notepad");
+
+        // chrome.windows.create({
+        //   url: `${import.meta.env.VITE_PAYMENT_SERVICE}/?token=${token}`,
+        //   type: "popup",
+        //   width: 500,
+        //   height: 600,
+        // });
       }
     };
 
