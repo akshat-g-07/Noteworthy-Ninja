@@ -14,15 +14,19 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Rounded edges for the track */
+  background: transparent; /* Transparent track */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #f1f1f1; /* Background of the scrollbar track */
+  background: transparent; /* Transparent thumb */
   border-radius: 10px; /* Rounded edges for the thumb */
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #f1f1f1b0; /* Background of the scrollbar track */
+/* Show scrollbar only while scrolling */
+:hover::-webkit-scrollbar-thumb {
+  background: rgba(241, 241, 241, 0.5); /* Semi-transparent light gray */
+}
+
+:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(241, 241, 241, 0.7); /* Slightly more opaque on hover */
 }
