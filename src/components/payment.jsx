@@ -94,12 +94,12 @@ export default function Payment() {
     <>
       <div className="size-full">
         <div className="w-full h-10 md:h-12 lg:h-14 items-center flex justify-center">
-          <img src="/logo.jpeg" className="w-auto h-full mr-2" />
+          <img src="/assets/logo.png" className="w-auto h-full mr-2" />
           <p className="w-fit text-white tracking-wider text-3xl md:text-4xl lg:text-5xl font-bold md:font-extrabold lg:font-extrabold">
             Noteworthy Ninja
           </p>
         </div>
-        <div className="flex justify-center items-center h-full mt-20">
+        <div className="flex justify-center items-center h-fit mt-20">
           <p className="text-white text-3xl font-bold">
             $9<span className="text-sm">/month</span>
           </p>
