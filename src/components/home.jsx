@@ -94,7 +94,7 @@ export default function Home() {
           </button>
 
           {/* Tutorial */}
-          <div className="bg-black size-80 lg:size-64 mx-auto"></div>
+          <div className="bg-black w-full aspect-square mx-auto"></div>
 
           {/* Developer */}
           <div className="w-full text-white text-xl font-bold flex flex-col lg:flex-row justify-center items-center my-5">
@@ -114,7 +114,12 @@ export default function Home() {
           <div
             className="w-full text-white/75 text-sm font-thin flex flex-col lg:flex-row justify-center items-center my-2 cursor-pointer"
             onClick={() => {
-              navigate("/privacy-policy");
+              chrome.windows.create({
+                url: `${import.meta.env.VITE_PRIVACY_POLICY}`,
+                type: "popup",
+                width: 500,
+                height: 600,
+              });
             }}
           >
             Privacy Policy
